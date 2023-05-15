@@ -55,6 +55,14 @@ export const YouTubeForm = () => {
                   /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/,
                 message: "Invalid email format",
               },
+              validate: {
+                notAdminByJarman: (fieldValue)=>{
+                    return fieldValue !== "admin@example.com" || "This is email only for internal use only"
+                },
+                notDomainSupported: (fieldValue) =>{
+                    return !fieldValue.endsWith("baddomain.com") || "This domain is not supported"
+                }
+              }
             })}
           />
           <p className="error">{errors.email?.message}</p>
