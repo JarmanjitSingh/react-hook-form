@@ -1,6 +1,6 @@
 import { DevTool } from "@hookform/devtools";
 import { useEffect } from "react";
-import { useForm, useFieldArray, get } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 
 let renderCount = 0; // to check how many times component renders
 
@@ -11,9 +11,10 @@ export const YouTubeForm = () => {
     control,
     handleSubmit,
     setValue,
-    formState: { errors },
+    formState: { errors, isDirty, isValid, isSubmitting, isSubmitted, isSubmitSuccessful, submitCount },
     watch,
     getValues,
+    reset
   } = useForm({
     //to set a default value of the field you can also fetch data here and showit for this watch v no.12
     defaultValues: {
@@ -50,9 +51,36 @@ export const YouTubeForm = () => {
     console.log(getValues(["username"])); //for getting particular value
   };
 
+  ////// for setvalue function the third arguement is for updating a state otherwise setvalue does not effect state value
+
+  const handleSetValue = () => {
+    setValue("username", "value changed", {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
+  };
+
+  ///// touched state - when user go in and back out from the field then touched state is true
+  ///// dirty state - and when user again go in and change field value then it is dirty state true
+
   const onSubmit = (data) => {
     console.log("form submitted", data);
   };
+
+  /////// submission error handling
+  const onError = (errors) => {
+    console.log("Errors in console", errors);
+  };
+
+  ///// disable submission button -- when user is not interacted with form or not correct any feild validation so import isDirty and isValid from useform and place it in submission button.
+  ///// other form submitting states -- isSubmitting -- when form submitting, isSubmitted, isSubmitSuccessful, submitCount
+
+
+  ///// reset metod -- this method is reset values to its default values >> 1. reset on reset button 2. reset when form submiited successfully with useEffect hook.
+
+
+
 
   //this is when we show intially any value in the field and the first want is pass default values object in useform hook
   //   useEffect(() => {
@@ -67,7 +95,7 @@ export const YouTubeForm = () => {
 
       {/* First part: learning register and handleSubmit vaildations, custom validations and error messages and devtool with control */}
 
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form onSubmit={handleSubmit(onSubmit, onError)} noValidate>
         <div className="form-control">
           <label htmlFor="username">Username</label>
           <input
@@ -211,9 +239,15 @@ export const YouTubeForm = () => {
           />
           <p className="error">{errors.dob?.message}</p>
         </div>
-        <button>Submit</button>
+        <button disabled={!isDirty || !isValid || isSubmitting}>Submit</button>
+        <button type="button" onClick={()=> reset()}>
+          Reset
+        </button>
         <button type="button" onClick={handleGetValues}>
           Get Values
+        </button>
+        <button type="button" onClick={handleSetValue}>
+          set Username value
         </button>
       </form>
       <DevTool control={control} />
