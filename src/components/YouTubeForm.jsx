@@ -14,7 +14,8 @@ export const YouTubeForm = () => {
     formState: { errors, isDirty, isValid, isSubmitting, isSubmitted, isSubmitSuccessful, submitCount },
     watch,
     getValues,
-    reset
+    reset,
+    trigger
   } = useForm({
     //to set a default value of the field you can also fetch data here and showit for this watch v no.12
     defaultValues: {
@@ -79,7 +80,11 @@ export const YouTubeForm = () => {
 
   ///// reset metod -- this method is reset values to its default values >> 1. reset on reset button 2. reset when form submiited successfully with useEffect hook.
 
+  ///// async validations -- applied on email check it out in email -- remember remove !valid from submit button
 
+  ///// validation modes -- for check name field onsubmit is defalut behaviour other -- onblur, onchange, onTouched, all(both blur and change events)
+
+  ///// manually trigger validations -- destructre trigger from useForm , we can trigger on a validate trigger button clicked we can also do it for a any single field by passing name to trigger method
 
 
   //this is when we show intially any value in the field and the first want is pass default values object in useform hook
@@ -106,6 +111,7 @@ export const YouTubeForm = () => {
                 value: true,
                 message: "username is required",
               },
+              mode: "onSubmit"
             })}
           />
           <p className="error">{errors.username?.message}</p>
@@ -135,6 +141,14 @@ export const YouTubeForm = () => {
                     "This domain is not supported"
                   );
                 },
+                emailAvailable: async(fieldValue)=>{
+                  const response = await fetch(`https://jsonplaceholder.typicode.com/users?email=${fieldValue}`);
+                  const data = await response.json()
+                  console.log(data, data.length)
+
+                  return data.length == 0 || "Email already exists"
+
+                }
               },
             })}
           />
@@ -239,7 +253,7 @@ export const YouTubeForm = () => {
           />
           <p className="error">{errors.dob?.message}</p>
         </div>
-        <button disabled={!isDirty || !isValid || isSubmitting}>Submit</button>
+        <button disabled={!isDirty || !isValid  || isSubmitting}>Submit</button>
         <button type="button" onClick={()=> reset()}>
           Reset
         </button>
@@ -249,8 +263,25 @@ export const YouTubeForm = () => {
         <button type="button" onClick={handleSetValue}>
           set Username value
         </button>
+        <button type="button" onClick={()=> trigger()}>
+          validate trigger
+        </button>
       </form>
       <DevTool control={control} />
     </div>
   );
 };
+
+//what we learn in this section 
+// 1. Default values 
+// 2. object and array values 
+// 3. dynamic fields 
+// 4. numeric and date values 
+// 5. watch, get and set value fields 
+// 6.Touched and dirty states
+// 7.Handle submission Errors 
+// 8. Form submission state 
+// 9. reset form
+// 10. async validation
+// 11. validation modes 
+// 12. manually trigger validations
